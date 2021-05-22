@@ -5,21 +5,33 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <pwd.h>
+
 
 #define MAX_LEN_LINE    100
+#define LEN_HOSTNAME    30
+#define MAX_ROUTE       350
 
 int main(void)
 {
     char command[MAX_LEN_LINE];
-    char *args[] = {command, NULL};
+    char cwd[MAX_LEN_LINE];
+    char *args[] = {command, NULL,NULL};
     int ret, status;
     pid_t pid, cpid;
+    char hostname[LEN_HOSTNAME +1];
+    memset(hostname, 0x00, sizeof(hostname));
+    gethostname(hostname, LEN_HOSTNAME);
     
     while (true) {
         char *s;
         int len;
+        getcwd(cwd,sizeof(cwd));
         
-        printf("MyShell $ ");
+        printf("%c[36mMyShell@",27);
+        printf("%c[36m%s@%s@", 27, getpwuid(getuid())->pw_name, hostname);
+        printf("%c[37m%s $", 27, cwd);
+        
         s = fgets(command, MAX_LEN_LINE, stdin);
         if (s == NULL) {
             fprintf(stderr, "fgets failed\n");
@@ -29,7 +41,7 @@ int main(void)
         len = strlen(command);
         printf("%d\n", len);
         if (command[len - 1] == '\n') {
-            command[len - 1] = '\0'; 
+            command[len - 1] = '\0'; 000
         }
         
         printf("[%s]\n", command);
