@@ -41,10 +41,16 @@ int main(void)
         len = strlen(command);
         printf("%d\n", len);
         if (command[len - 1] == '\n') {
-            command[len - 1] = '\0'; 000
+            command[len - 1] = '\0';
+        }
+       
+        if(!strcmp(command, "exit")){
+            printf("Program Exit \n");
+            exit(0);
         }
         
-        printf("[%s]\n", command);
+        printf("Command: [%s]\n", command);
+        printf("Len: %d\n", len);
       
         pid = fork();
         if (pid < 0) {
@@ -62,6 +68,9 @@ int main(void)
             }
         }
         else {  /* child */
+            if (!strcmp(command, "ls")){
+                strcpy(command, "/bin/ls");
+            }
             ret = execve(args[0], args, NULL);
             if (ret < 0) {
                 fprintf(stderr, "execve failed\n");   
